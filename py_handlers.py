@@ -37,8 +37,7 @@ except URLError as e:
 
 # 2.ProxyHandler 代理handler
 # 在真实IP访问服务器间设置代理服务器，伪装IP而不会被因为访问频率过高而遭封杀
-from urllib.error 
-import URLError 
+from urllib.error import URLError 
 from urllib.request import ProxyHandler, build_opener 
 proxy_handler = ProxyHandler({'http':'http://127.o.o.1:9743','https':'https://127.0.0.1:9743'}) 
 opener = build_opener(proxy_handler) 
