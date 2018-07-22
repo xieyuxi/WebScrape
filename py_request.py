@@ -1,5 +1,5 @@
 '''
-1.Request的使用源码：
+2.Request的使用源码：
 def __init__(self, url, data=None, headers={},origin_req_host=None,unverifiable=False,method=None):
 这里和urlopen比较一下差异：
 def urlopen(url, data=None, timeout=socket._GLOBAL_DEFAULT_TIMEOUT,*, cafile=None, capath=None, cadefault=False, context=None):
