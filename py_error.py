@@ -6,14 +6,12 @@ URLError是urllib.error模块的一个类，当使用request产生异常时都�
  2）reason：同父类一样，用于返回错误的原因。 
  3）headers： 返回请求头。
 '''
-
 from urllib import request, error 
 import socket 
 
 try:
     response = request.urlopen('https://xieyuxi.com/index.htm') 
     #response = request.urlopen('https://www.baidu.com', timeout = 0.01) 
-
 except error.HTTPError as e: 
     print(e.reason, e.code, e.headers, sep='\n') 
 except error.URLError as e: 
