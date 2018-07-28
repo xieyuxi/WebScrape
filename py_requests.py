@@ -44,17 +44,17 @@ import requests
 r = requests.get('https://github.com/favicon.ico')
 with open('favicon.ico','wb') as f:
     f.write(r.content)
-'''
+
 
 # requests.post()方法：
 '''
 def post(url, data=None, json=None, **kwargs):
 # 向服务器发送POST请求，这里可以理解为向服务器发送了一个包含了各种信息的Request对象：
-1、url: 具体的URL请求地址；
-2、data: (可选) 字典（会被编码）、字节流或者类似文件的对象，都会被打包进Request对象；
-3、**kwargs：其他可能需要增加进Request对象的额外数据
-4、返回一个requests.Response对象。    
-
+# 1、url: 具体的URL请求地址；
+# 2、data: (可选) 字典（会被编码）、字节流或者类似文件的对象，都会被打包进Request对象；
+# 3、**kwargs：其他可能需要增加进Request对象的额外数据
+# 4、返回一个requests.Response对象。    
+'''
 import requests 
 data = {'name':'xieyuxi', 'age': 22}
 r = requests.post('http://httpbin.org/post', params=data) 
