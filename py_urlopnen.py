@@ -28,6 +28,7 @@ res1 = urllib.request.urlopen('http://www.baidu.com')
 data = bytes(urllib.parse.urlencode({'word':'hello'}), encoding ='utf-8') 
 # 这里注意URL后面跟的post
 res2 = urllib.request.urlopen('http://httpbin.org/post', data=data) 
+print(res2) # 这里返回的是一个HTTPResponse object
 # print(res2.read())
 
 # c.TimeOut:
