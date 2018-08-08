@@ -48,36 +48,118 @@
     e.电影的上映时间和上映地：
         <dd>.*?"releasetime">(.*?)</p>
     f.电影的评分：
-        <dd>.*?"integer">(.*?)</i>.*?"fraction">(.*?)</i>.*?<dd>
-
-
-
+        <dd>.*?"integer">(.*?)</i>.*?"fraction">(.*?)</i>
 
 '''
-
 import requests
 import re
 
 myheader = {
     'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36'
 }
-
-response = requests.get('http://maoyan.com/board/4?offset=0',headers = myheader)
+movie = []
+f = open("movie.txt","a")
+for i in range(0,101,10):
+    url = 'http://maoyan.com/board/4?offset=' + str(i)
+    response = requests.get(url,headers = myheader)
 # print(response) # 这里我们获得了response的一个对象<Response [200]>
 # print(response.text) # 这里我们才得到真正的HTML
-html = response.text.strip()
+    html = response.text
 # print(html)
 # 参数re.S表示“.”的作用扩展到整个字符串，包括“\n”。
-pattern_rank  = re.compile('<dd>.*?board-index.*?>(.*?)</i>',re.S) # 这里我们可以获取到电影的排名信息
-pattern_pic   = re.compile('<dd>.*?src="(http:.*?)"',re.S)         # 这里我们可以获取到电影的图片
-pattern_name  = re.compile('<dd>.*?title="(.*?)"',re.S)            # 这里我们可以获取到电影的名字
-pattern_cast  = re.compile('<dd>.*?"star">(.*?)</p>',re.S)         # 这里我们可以获取到电影的演员表
-pattern_time  = re.compile('<dd>.*?"releasetime">(.*?)</p>',re.S)  # 这里我们可以获取到电影的上映时间
-pattern_score = re.compile('<dd>.*?"integer">(.*?)</i>.*?"fraction">(.*?)</i>.*?<dd>', re.S) # 这里我们可以获取到电影的评分
+# pattern_rank  = re.compile('<dd>.*?board-index.*?>(.*?)</i>',re.S) # 这里我们可以获取到电影的排名信息
+# pattern_pic   = re.compile('<dd>.*?src="(http:.*?)"',re.S)         # 这里我们可以获取到电影的图片
+# pattern_name  = re.compile('<dd>.*?title="(.*?)"',re.S)            # 这里我们可以获取到电影的名字
+# pattern_cast  = re.compile('<dd>.*?"star">(.*?)</p>',re.S)         # 这里我们可以获取到电影的演员表
+# pattern_time  = re.compile('<dd>.*?"releasetime">(.*?)</p>',re.S)  # 这里我们可以获取到电影的上映时间
+# pattern_score = re.compile('<dd>.*?"integer">(.*?)</i>.*?"fraction">(.*?)</i>.*?<dd>', re.S) # 这里我们可以获取到电影的评分
+
 # 注意其中的括号是将匹配的内容分为一个组(.*?)，这样不同信息就在不同组
-pattern = re.compile('<dd>.*?board-index.*?>(.*?)</i>.*?src="(http:.*?)".*?title="(.*?)".*?"star">(.*?)</p>.*?"releasetime">(.*?)</p>.*?"integer">(.*?)</i>.*?"fraction">(.*?)</i>.*?<dd>',re.S)
-items = re.findall(pattern,html)
-#print(items[2])
-print(items)
-for item in items:
-    print(item)
+    pattern = re.compile('<dd>.*?board-index.*?>(.*?)</i>.*?src="(http:.*?)".*?title="(.*?)".*?"star">(.*?)</p>.*?"releasetime">(.*?)</p>.*?"integer">(.*?)</i>.*?"fraction">(.*?)</i>',re.S)
+    items = re.findall(pattern,html)
+    
+    for item in items:
+        dic = {
+            '排名'     :item[0],
+            '片名'     :item[2],
+            '主演'     :item[3].strip()[3:],
+            '上映时间' :item[4].strip()[5:],
+            '评分'     :item[5]+item[6],
+            '图片'     :item[1]
+        }
+        movie.append(dic)
+        f.write(str(dic)+'\n')
+
+f.close(
+    
+)
+'''
+import json
+import requests
+from requests.exceptions import RequestException
+import re
+import time
+
+
+def get_one_page(url):
+    try:
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.162 Safari/537.36'
+        }
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            return response.text
+        return None
+    except RequestException:
+        return None
+
+
+def parse_one_page(html):
+    pattern = re.compile('<dd>.*?board-index.*?>(.*?)</i>.*?src="(http:.*?)".*?title="(.*?)".*?"star">(.*?)</p>.*?"releasetime">(.*?)</p>.*?"integer">(.*?)</i>.*?"fraction">(.*?)</i>',re.S)
+    items = re.findall(pattern, html)
+    for item in items:
+        # print(item[0])
+        # print(item[1])
+        # print(item[2])
+        # print(item[3].strip()[3:])
+        # print(item[4])
+        # print(item[5]+item[6])
+
+        # yield {
+        #     'index': item[0],
+        #     'image': item[1],
+        #     'title': item[2],
+        #     'actor': item[3].strip()[3:],
+        #     'time': item[4].strip()[5:],
+        #     'score': item[5] + item[6]
+        # }
+        dic = {
+            'index': item[0],
+            'image': item[1],
+            'title': item[2],
+            'actor': item[3].strip()[3:],
+            'time': item[4].strip()[5:],
+            'score': item[5] + item[6]
+        }
+        movie.append(dic)
+        print(movie)
+
+
+def write_to_file(content):
+    with open('result.txt', 'a', encoding='utf-8') as f:
+        f.write(json.dumps(content, ensure_ascii=False) + '\n')
+
+
+def main(offset):
+    url = 'http://maoyan.com/board/4?offset=' + str(offset)
+    html = get_one_page(url)
+    for item in parse_one_page(html):
+        print(item)
+        write_to_file(item)
+
+
+if __name__ == '__main__':
+    for i in range(10):
+        main(offset=i * 10)
+        time.sleep(1)
+'''
